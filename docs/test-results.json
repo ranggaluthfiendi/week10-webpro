@@ -1,0 +1,178 @@
+{
+  "testedAt": "2026-11-24T10:35:41.489Z",
+  "results": [
+    {
+      "method": "POST",
+      "path": "/students",
+      "status": 201,
+      "body": {
+        "id": 1,
+        "nim": "TEST-1795516539331",
+        "nama": "Dina Putri (Data Uji)",
+        "jurusan": "Informatika"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/students",
+      "status": 200,
+      "body": [
+        {
+          "id": 1,
+          "nim": "TEST-1795516539331",
+          "nama": "Dina Putri (Data Uji)",
+          "jurusan": "Informatika"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/students/1",
+      "status": 200,
+      "body": {
+        "id": 1,
+        "nim": "TEST-1795516539331",
+        "nama": "Dina Putri (Data Uji)",
+        "jurusan": "Informatika"
+      }
+    },
+    {
+      "method": "PATCH",
+      "path": "/students/1",
+      "status": 200,
+      "body": {
+        "id": 1,
+        "nim": "TEST-1795516539331",
+        "nama": "Dina Putri Diperbarui",
+        "jurusan": "Informatika"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/students?jurusan=informatika",
+      "status": 200,
+      "body": [
+        {
+          "id": 1,
+          "nim": "TEST-1795516539331",
+          "nama": "Dina Putri Diperbarui",
+          "jurusan": "Informatika"
+        }
+      ]
+    },
+    {
+      "method": "GET",
+      "path": "/students/count",
+      "status": 200,
+      "body": {
+        "total": 1
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/students",
+      "status": 409,
+      "body": {
+        "message": "NIM sudah digunakan",
+        "error": "Conflict",
+        "statusCode": 409
+      }
+    },
+    {
+      "method": "POST",
+      "path": "/students",
+      "status": 400,
+      "body": {
+        "message": [
+          "property asing should not exist",
+          "nim must be shorter than or equal to 30 characters",
+          "nim must be a string",
+          "nama should not be empty"
+        ],
+        "error": "Bad Request",
+        "statusCode": 400
+      }
+    },
+    {
+      "method": "PATCH",
+      "path": "/students/1",
+      "status": 400,
+      "body": {
+        "message": [
+          "nama must be shorter than or equal to 100 characters",
+          "nama should not be empty",
+          "nama must be a string"
+        ],
+        "error": "Bad Request",
+        "statusCode": 400
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/students/bukan-angka",
+      "status": 400,
+      "body": {
+        "message": "Validation failed (numeric string is expected)",
+        "error": "Bad Request",
+        "statusCode": 400
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/students/1",
+      "status": 200,
+      "body": {
+        "id": 1,
+        "nim": "TEST-1795516539331",
+        "nama": "Dina Putri Diperbarui",
+        "jurusan": "Informatika"
+      }
+    },
+    {
+      "check": "Data tetap ada setelah proses server dihentikan dan dijalankan kembali",
+      "status": "PASS"
+    },
+    {
+      "check": "Browser: tambah, ubah, filter, hapus dan mobile tanpa overflow",
+      "status": "PASS"
+    },
+    {
+      "method": "DELETE",
+      "path": "/students/1",
+      "status": 200,
+      "body": {
+        "message": "Mahasiswa berhasil dihapus"
+      }
+    },
+    {
+      "method": "GET",
+      "path": "/students/1",
+      "status": 404,
+      "body": {
+        "message": "Mahasiswa tidak ditemukan",
+        "error": "Not Found",
+        "statusCode": 404
+      }
+    },
+    {
+      "method": "PATCH",
+      "path": "/students/1",
+      "status": 404,
+      "body": {
+        "message": "Mahasiswa tidak ditemukan",
+        "error": "Not Found",
+        "statusCode": 404
+      }
+    },
+    {
+      "method": "DELETE",
+      "path": "/students/1",
+      "status": 404,
+      "body": {
+        "message": "Mahasiswa tidak ditemukan",
+        "error": "Not Found",
+        "statusCode": 404
+      }
+    }
+  ]
+}

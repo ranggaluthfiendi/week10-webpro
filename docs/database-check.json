@@ -1,0 +1,33 @@
+{
+  "checkedAt": "2026-11-24T10:37:16.467Z",
+  "validation": "Prisma schema loaded from prisma\\schema.prisma\nThe schema at prisma\\schema.prisma is valid 🚀\n",
+  "status": "Prisma schema loaded from prisma\\schema.prisma\nDatasource \"db\": PostgreSQL database \"mahasiswa_week10\", schema \"public\" at \"localhost:5432\"\n\n1 migration found in prisma/migrations\n\nDatabase schema is up to date!\n",
+  "columns": [
+    {
+      "column_name": "id",
+      "data_type": "integer",
+      "is_nullable": "NO"
+    },
+    {
+      "column_name": "nim",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "column_name": "nama",
+      "data_type": "text",
+      "is_nullable": "NO"
+    },
+    {
+      "column_name": "jurusan",
+      "data_type": "text",
+      "is_nullable": "NO"
+    }
+  ],
+  "migrations": [
+    {
+      "migration_name": "20261124102920_init",
+      "finished_at": "2026-11-24T10:29:20.128Z"
+    }
+  ]
+}

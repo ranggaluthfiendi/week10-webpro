@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="id">
+<head>
+<meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Data Mahasiswa</title>
+<style>
+*{box-sizing:border-box}body{margin:0;background:#f3f6fb;color:#192c46;font:16px/1.5 system-ui,sans-serif}header{background:#183b64;color:white;padding:32px max(24px,calc((100% - 1100px)/2))}header p{margin:6px 0 0;color:#d5e4f6}h1{margin:0;font-size:30px}main{max-width:1148px;margin:28px auto;padding:0 24px}.layout{display:grid;grid-template-columns:320px 1fr;gap:24px}.panel{background:white;border:1px solid #dae2ed;border-radius:12px;padding:24px}h2{font-size:21px;margin:0 0 20px}label{display:block;font-weight:600;margin-bottom:6px}input{font:inherit;width:100%;padding:10px 12px;border:1px solid #9aabc0;border-radius:6px;margin-bottom:16px}button{font:inherit;cursor:pointer;border:0;border-radius:6px;padding:10px 14px;background:#235fa4;color:white}button:hover{filter:brightness(.92)}button:disabled{opacity:.6;cursor:wait}.secondary{background:#e8eef7;color:#25476d}.danger{background:#fff0f0;color:#a72424}.buttons{display:flex;gap:8px;flex-wrap:wrap}.toolbar{display:flex;align-items:end;gap:10px;margin-bottom:20px}.toolbar>div{flex:1}.toolbar input{margin:0}.table-wrap{overflow-x:auto}table{border-collapse:collapse;width:100%;text-align:left}th,td{padding:12px 10px;border-bottom:1px solid #e3e9f1}th{background:#edf3fa;font-size:14px}td button{font-size:14px;padding:7px 10px}.count{font-size:16px;font-weight:400;color:#536b85}#message{min-height:24px;margin:16px 0}#message.error{color:#b01d1d}#message.success{color:#14633e}.empty{color:#64758b;text-align:center;padding:30px}footer{font-size:14px;color:#64758b;margin-top:24px}@media(max-width:760px){header{padding:24px}h1{font-size:26px}main{margin-top:20px;padding:0 16px}.layout{grid-template-columns:1fr}.panel{padding:18px}.toolbar{flex-wrap:wrap}.toolbar>div{min-width:100%}.table-wrap{overflow:visible}table,tbody,tr,td{display:block}thead{display:none}tr{border:1px solid #dbe4f0;border-radius:8px;margin-bottom:12px;padding:10px}td{padding:6px;border:0}td[data-label]:before{content:attr(data-label) ': ';font-weight:600}td.empty{padding:20px}}
+</style>
+</head>
+<body>
+<header><h1>Data Mahasiswa</h1><p>Kelola data mahasiswa dalam satu tempat.</p></header>
+<main>
+<div class="layout">
+<section class="panel"><h2 id="form-title">Tambah mahasiswa</h2>
+<form id="student-form">
+<label for="nim">NIM</label><input id="nim" name="nim" required maxlength="30" placeholder="Contoh: 123450001">
+<label for="nama">Nama lengkap</label><input id="nama" name="nama" required maxlength="100" placeholder="Nama mahasiswa">
+<label for="jurusan">Jurusan</label><input id="jurusan" name="jurusan" required maxlength="100" placeholder="Contoh: Informatika">
+<div class="buttons"><button id="save" type="submit">Simpan</button><button id="cancel" class="secondary" type="button" hidden>Batal</button></div>
+</form>
+<p id="message" role="status" aria-live="polite"></p></section>
+<section class="panel"><h2>Daftar mahasiswa <span class="count" id="count"></span></h2>
+<form id="filter-form" class="toolbar"><div><label for="filter">Filter jurusan</label><input id="filter" placeholder="Semua jurusan"></div><button type="submit">Terapkan</button><button id="reset" type="button" class="secondary">Reset</button></form>
+<div class="table-wrap"><table><thead><tr><th>NIM</th><th>Nama</th><th>Jurusan</th><th>Aksi</th></tr></thead><tbody id="rows"></tbody></table></div>
+</section>
+</div><footer>Praktikum Web • Pekan 10</footer>
+</main>
+<script>
+const form=document.querySelector('#student-form');
+const rows=document.querySelector('#rows');
+const message=document.querySelector('#message');
+let editingId=null;
+function notify(text,error=false){message.textContent=text;message.className=error?'error':'success';}
+async function api(path,options={}){const response=await fetch(path,{...options,headers:{'Content-Type':'application/json',...options.headers}});const data=await response.json();if(!response.ok)throw new Error(Array.isArray(data.message)?data.message.join(', '):data.message||'Permintaan gagal');return data;}
+function resetForm(){editingId=null;form.reset();document.querySelector('#form-title').textContent='Tambah mahasiswa';document.querySelector('#cancel').hidden=true;}
+async function load(){try{const filter=document.querySelector('#filter').value.trim();const [students,total]=await Promise.all([api('/students'+(filter?'?jurusan='+encodeURIComponent(filter):'')),api('/students/count')]);document.querySelector('#count').textContent=`(${students.length} ditampilkan / ${total.total} total)`;rows.replaceChildren();if(!students.length){const tr=document.createElement('tr');const td=document.createElement('td');td.colSpan=4;td.className='empty';td.textContent='Belum ada mahasiswa yang ditampilkan.';tr.append(td);rows.append(tr);}for(const student of students){const tr=document.createElement('tr');for(const [key,label] of [['nim','NIM'],['nama','Nama'],['jurusan','Jurusan']]){const td=document.createElement('td');td.dataset.label=label;td.textContent=student[key];tr.append(td);}const actions=document.createElement('td');const group=document.createElement('div');group.className='buttons';const edit=document.createElement('button');edit.textContent='Ubah';edit.className='secondary';edit.onclick=async()=>{try{const current=await api('/students/'+student.id);editingId=current.id;for(const key of ['nim','nama','jurusan'])form.elements[key].value=current[key];document.querySelector('#form-title').textContent='Ubah mahasiswa';document.querySelector('#cancel').hidden=false;form.elements.nim.focus();}catch(e){notify(e.message,true);}};const remove=document.createElement('button');remove.textContent='Hapus';remove.className='danger';remove.onclick=async()=>{if(!confirm('Hapus mahasiswa '+student.nama+'?'))return;try{await api('/students/'+student.id,{method:'DELETE'});if(editingId===student.id)resetForm();notify('Mahasiswa berhasil dihapus.');await load();}catch(e){notify(e.message,true);}};group.append(edit,remove);actions.append(group);tr.append(actions);rows.append(tr);}}catch(e){notify(e.message,true);}}
+form.addEventListener('submit',async event=>{event.preventDefault();const save=document.querySelector('#save');save.disabled=true;try{const data={nim:form.elements.nim.value.trim(),nama:form.elements.nama.value.trim(),jurusan:form.elements.jurusan.value.trim()};await api('/students'+(editingId?'/'+editingId:''),{method:editingId?'PATCH':'POST',body:JSON.stringify(data)});resetForm();notify('Data mahasiswa berhasil disimpan.');await load();}catch(e){notify(e.message,true);}finally{save.disabled=false;}});
+document.querySelector('#cancel').onclick=resetForm;
+document.querySelector('#filter-form').onsubmit=event=>{event.preventDefault();load();};
+document.querySelector('#reset').onclick=()=>{document.querySelector('#filter').value='';load();};
+load();
+</script>
+</body></html>

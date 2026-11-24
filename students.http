@@ -1,0 +1,48 @@
+@baseUrl = http://localhost:3001
+@studentId = 1
+
+### Tambah mahasiswa (201)
+POST {{baseUrl}}/students
+Content-Type: application/json
+
+{
+  "nim": "123450001",
+  "nama": "Andi Pratama",
+  "jurusan": "Informatika"
+}
+
+### Daftar (200)
+GET {{baseUrl}}/students
+
+### Detail: sesuaikan studentId dari hasil POST (200)
+GET {{baseUrl}}/students/{{studentId}}
+
+### Ubah (200)
+PATCH {{baseUrl}}/students/{{studentId}}
+Content-Type: application/json
+
+{
+  "nama": "Andi Pratama Diperbarui"
+}
+
+### Filter (200)
+GET {{baseUrl}}/students?jurusan=Informatika
+
+### Total mahasiswa (200)
+GET {{baseUrl}}/students/count
+
+### Hapus (200)
+DELETE {{baseUrl}}/students/{{studentId}}
+
+### Setelah dihapus: detail harus 404
+GET {{baseUrl}}/students/{{studentId}}
+
+### Input salah (400)
+POST {{baseUrl}}/students
+Content-Type: application/json
+
+{
+  "nim": 123,
+  "nama": "",
+  "jurusan": "Informatika"
+}
